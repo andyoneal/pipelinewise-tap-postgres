@@ -229,7 +229,7 @@ def schema_for_column(c):
 
 #this seems to identify all arrays:
 #select typname from pg_attribute  as pga join pg_type as pgt on pgt.oid = pga.atttypid  where typlen = -1 and typelem != 0 and pga.attndims > 0;
-def produce_table_info(conn, filter_schemas=None):
+def produce_table_info(conn, filter_schemas=None, filter_tables=None):
     with conn.cursor(cursor_factory=psycopg2.extras.DictCursor, name='stitch_cursor') as cur:
         cur.itersize = post_db.cursor_iter_size
         table_info = {}
@@ -278,6 +278,9 @@ AND has_table_privilege(pg_class.oid, 'SELECT') = true """
 
         if filter_schemas:
             sql = post_db.filter_schemas_sql_clause(sql, filter_schemas)
+
+        if filter_tables:
+            sql = post_db.filter_tables_sql_clause(sql, filter_tables)
 
         cur.execute(sql)
 
@@ -387,8 +390,8 @@ def discover_columns(connection, table_info):
 
     return entries
 
-def discover_db(connection, filter_schemas=None):
-    table_info = produce_table_info(connection, filter_schemas)
+def discover_db(connection, filter_schemas=None, filter_tables=None):
+    table_info = produce_table_info(connection, filter_schemas, filter_tables)
     db_streams = discover_columns(connection, table_info)
     return db_streams
 
@@ -433,7 +436,7 @@ def do_discovery(conn_config):
         LOGGER.info("Discovering db %s", dbname)
         conn_config['dbname'] = dbname
         with post_db.open_connection(conn_config) as conn:
-            db_streams = discover_db(conn, conn_config.get('filter_schemas'))
+            db_streams = discover_db(conn, conn_config.get('filter_schemas'), conn_config.get('filter_tables'))
             all_streams = all_streams + db_streams
 
 
@@ -687,6 +690,7 @@ def main_impl():
                    'dbname'   : args.config['dbname'],
                    'filter_dbs' : args.config.get('filter_dbs'),
                    'filter_schemas' : args.config.get('filter_schemas'),
+                   'filter_tables' : args.config.get('filter_tables'),
                    'debug_lsn' : args.config.get('debug_lsn') == 'true',
                    'logical_poll_total_seconds': float(args.config.get('logical_poll_total_seconds', 0))
                    }

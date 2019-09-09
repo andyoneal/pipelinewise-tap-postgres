@@ -48,6 +48,10 @@ def filter_schemas_sql_clause(sql, filer_schemas):
     in_clause = " AND n.nspname in (" + ",".join(["'{}'".format(b.strip(' ')) for b in filer_schemas.split(',')]) + ")"
     return sql + in_clause
 
+def filter_tables_sql_clause(sql, filer_tables):
+    in_clause = " AND pg_class.relname in (" + ",".join(["'{}'".format(b.strip(' ')) for b in filer_tables.split(',')]) + ")"
+    return sql + in_clause
+
 #pylint: disable=too-many-branches,too-many-nested-blocks
 def selected_value_to_singer_value_impl(elem, sql_datatype):
     sql_datatype = sql_datatype.replace('[]', '')
