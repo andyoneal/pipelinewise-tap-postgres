@@ -10,7 +10,7 @@ import tap_postgres.db as post_db
 
 LOGGER = singer.get_logger()
 
-UPDATE_BOOKMARK_PERIOD = 1000
+UPDATE_BOOKMARK_PERIOD = 10000
 
 def fetch_max_replication_key(conn_config, replication_key, schema_name, table_name):
     with post_db.open_connection(conn_config, False) as conn:

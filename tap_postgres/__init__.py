@@ -384,7 +384,7 @@ def discover_columns(connection, table_info):
             entry = {'table_name'    : table_name,
                      'stream'        : table_name,
                      'metadata'      : metadata.to_list(mdata),
-                     'tap_stream_id' : post_db.compute_tap_stream_id(database_name, schema_name, table_name),
+                     'tap_stream_id' : post_db.compute_tap_stream_id(schema_name, table_name),
                      'schema'        : schema}
 
             entries.append(entry)
