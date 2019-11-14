@@ -118,7 +118,9 @@ def selected_row_to_singer_message(stream, row, version, columns, time_extracted
         cleaned_elem = selected_value_to_singer_value(elem, sql_datatype)
         row_to_persist += (cleaned_elem,)
 
-    rec = dict(zip(columns, row_to_persist))
+    sanitized_columns = [x.replace("_sdc_","_orig_sdc_") for x in columns]
+
+    rec = dict(zip(sanitized_columns, row_to_persist))
 
     return singer.RecordMessage(
         stream=calculate_destination_stream_name(stream, md_map),
