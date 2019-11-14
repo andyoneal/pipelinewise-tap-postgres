@@ -21,9 +21,16 @@ def send_schema_message(stream, bookmark_properties):
     else:
         key_properties = s_md.get((), {}).get('table-key-properties', [])
 
+    sanitized_stream = stream['schema']
+
+    for x in sanitized_stream['properties'].keys():
+        if x.startswith("_sdc_"):
+            sanitized_stream['properties'][x.replace("_sdc_","_orig_sdc_")] = sanitized_stream['properties'].pop(x)
+
+
     schema_message = {'type' : 'SCHEMA',
                       'stream' : post_db.calculate_destination_stream_name(stream, s_md),
-                      'schema' : stream['schema'],
+                      'schema' : sanitized_stream,
                       'key_properties' : key_properties,
                       'bookmark_properties': bookmark_properties}
 
