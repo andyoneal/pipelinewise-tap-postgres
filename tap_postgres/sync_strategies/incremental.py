@@ -101,11 +101,11 @@ def sync_table(conn_info, stream, state, desired_columns, md_map):
 
                     #Picking a replication_key with NULL values will result in it ALWAYS been synced which is not great
                     #event worse would be allowing the NULL value to enter into the state
-                    if record_message.record[replication_key] is not None:
+                    if record_message.record[replication_key.replace("_sdc_","_orig_sdc_")] is not None:
                         state = singer.write_bookmark(state,
                                                       stream['tap_stream_id'],
                                                       'replication_key_value',
-                                                      record_message.record[replication_key])
+                                                      record_message.record[replication_key.replace("_sdc_","_orig_sdc_")])
 
 
                     if rows_saved % UPDATE_BOOKMARK_PERIOD == 0:

@@ -26,7 +26,7 @@ def send_schema_message(stream, bookmark_properties):
     sanitized_bookmark_properties = [x.replace("_sdc_","_orig_sdc_") for x in bookmark_properties]
 
     for x in sanitized_stream['properties'].keys():
-        if x.startswith("_sdc_"):
+        if x.startswith(("_sdc_","__sdc_")):
             sanitized_stream['properties'][x.replace("_sdc_","_orig_sdc_")] = sanitized_stream['properties'].pop(x)
 
 
